@@ -56,35 +56,41 @@
 const nada = [
 
     // Senar 4
+    // D senar 4 fret 0
     {
         nama: "D",
-        frekuensi: 293.66
+        frekuensi: 146.83
     },
 
+    // E senar 4 fret 2
     {
         nama: "E",
-        frekuensi: 329.63
+        frekuensi: 164.81
     },
 
+    // F senar 4 fret 3
     {
         nama: "F",
-        frekuensi: 349.23
+        frekuensi: 174.61
     },
 
     // Senar 3
+    // G senar 3 fret 0
     {
         nama: "G",
-        frekuensi: 392.00
+        frekuensi: 196.00
     },
 
+    // A senar 3 fret 2
     {
         nama: "A",
-        frekuensi: 440.00
+        frekuensi: 220.00
     },
 
+    // B senar 3 fret 4
     {
         nama: "B",
-        frekuensi: 493.88
+        frekuensi: 246.94
     }
 
 ];
@@ -128,7 +134,7 @@ function gambarNot() {
     );
 
     // -----------------------------
-    // PARANADA 5 GARIS
+    // PARANADA
     // -----------------------------
 
     const x1 = 100;
@@ -141,7 +147,9 @@ function gambarNot() {
 
     for (let i = -2; i <= 2; i++) {
 
-        const y = garisTengah + i * jarak;
+        const y =
+            garisTengah +
+            i * jarak;
 
         ctx.beginPath();
 
@@ -173,36 +181,31 @@ function gambarNot() {
     // POSISI NOT
     // -----------------------------
     //
+    // B = garis tengah
+    // A = spasi di bawah B
+    // G = garis ke-2
+    // F = spasi di bawah G
+    // E = garis paling bawah
     // D = di bawah garis paling bawah
     //
-    // E = garis paling bawah
-    //
-    // F = spasi antara garis 1 dan 2
-    //
-    // G = garis ke-2
-    //
-    // A = spasi antara garis 2 dan 3
-    //
-    // B = garis tengah
-    //
-    // Dengan demikian:
-    //
-    // D < E < F < G < A < B
+    // Dalam notasi gitar, nada yang
+    // terdengar satu oktaf lebih rendah
+    // dari posisi not tertulis.
     //
 
     const posisi = {
 
-        "D": 180,
+        "B": 150,
 
-        "E": 165,
+        "A": 165,
 
-        "F": 150,
+        "G": 180,
 
-        "G": 135,
+        "F": 195,
 
-        "A": 120,
+        "E": 210,
 
-        "B": 90
+        "D": 240
 
     };
 
@@ -216,9 +219,7 @@ function gambarNot() {
     // GARIS BANTU UNTUK D
     // -----------------------------
 
-    if (
-        target.nama === "D"
-    ) {
+    if (target.nama === "D") {
 
         ctx.beginPath();
 
@@ -229,7 +230,6 @@ function gambarNot() {
         ctx.lineWidth = 3;
 
         ctx.stroke();
-
     }
 
 
@@ -504,6 +504,9 @@ function cekNada(freq) {
         Date.now();
 
 
+    // Mencegah satu petikan
+    // terbaca berkali-kali
+
     if (
         sekarang -
         waktuTerakhir <
@@ -544,6 +547,8 @@ function cekNada(freq) {
 
     }
 
+
+    // Toleransi 2,5%
 
     if (
         terdekat &&
@@ -588,6 +593,8 @@ function cekNada(freq) {
             kedip(
                 "kedip-merah"
             );
+
+            // NOT TETAP
 
         }
 
