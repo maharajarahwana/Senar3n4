@@ -173,32 +173,32 @@ function gambarNot() {
     // POSISI NOT
     // -----------------------------
     //
-    // D = garis ke-4
+    // D = di bawah garis paling bawah
     //
-    // E = spasi di atas garis ke-4
+    // E = garis paling bawah
     //
-    // F = garis ke-5
+    // F = spasi antara garis 1 dan 2
     //
-    // G = spasi di atas garis ke-5
+    // G = garis ke-2
     //
-    // A = garis bantu pertama
+    // A = spasi antara garis 2 dan 3
     //
-    // B = spasi di atas garis bantu pertama
+    // B = garis tengah
     //
 
     const posisi = {
 
-        "D": 120,
+        "D": 180,
 
-        "E": 105,
+        "E": 165,
 
-        "F": 90,
+        "F": 150,
 
-        "G": 75,
+        "G": 135,
 
-        "A": 60,
+        "A": 120,
 
-        "B": 45
+        "B": 105
 
     };
 
@@ -209,11 +209,11 @@ function gambarNot() {
 
 
     // -----------------------------
-    // GARIS BANTU
+    // GARIS BANTU UNTUK D
     // -----------------------------
 
     if (
-        target.nama === "A"
+        target.nama === "D"
     ) {
 
         ctx.beginPath();
