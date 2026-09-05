@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Latihan Membaca Not</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        transition: background-color 0.1s;
+    }
+
+    canvas {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+    }
+
+    .kedip-merah {
+        background-color: red !important;
+    }
+
+    .kedip-hijau {
+        background-color: lime !important;
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas" width="500" height="300"></canvas>
+
+<script>
+
+// =====================================================
+// DAFTAR NADA
+// =====================================================
+
+const nada = [
+
+    // Senar 4
+    {
+        nama: "D",
+        frekuensi: 293.66
+    },
+
+    {
+        nama: "E",
+        frekuensi: 329.63
+    },
+
+    {
+        nama: "F",
+        frekuensi: 349.23
+    },
+
+    // Senar 3
+    {
+        nama: "G",
+        frekuensi: 392.00
+    },
+
+    {
+        nama: "A",
+        frekuensi: 440.00
+    },
+
+    {
+        nama: "B",
+        frekuensi: 493.88
+    }
+
+];
+
+
+// =====================================================
+// CANVAS
+// =====================================================
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let target;
+
+
+// =====================================================
+// PILIH NOT RANDOM
+// =====================================================
+
+function pilihNot() {
+
+    target = nada[
+        Math.floor(Math.random() * nada.length)
+    ];
+
+    gambarNot();
+}
+
+
+// =====================================================
+// GAMBAR NOT
+// =====================================================
+
+function gambarNot() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    // -----------------------------
+    // PARANADA
+    // -----------------------------
+
+    const x1 = 100;
+    const x2 = 440;
+
+    const jarak = 30;
+
+    // Garis tengah = garis ke-3
+    const garisTengah = 150;
+
+    for (let i = -2; i <= 2; i++) {
+
+        const y = garisTengah + i * jarak;
+
+        ctx.beginPath();
+
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x2, y);
+
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+    }
+
+
+    // -----------------------------
+    // KUNCI G
+    // -----------------------------
+
+    ctx.font = "115px serif";
+    ctx.fillStyle = "black";
+
+    ctx.fillText(
+        "𝄞",
+        35,
+        185
+    );
+
+
+    // -----------------------------
+    // POSISI NOT
+    // -----------------------------
+    //
+    // D = garis ke-4
+    //
+    // E = spasi di atas garis ke-4
+    //
+    // F = garis ke-5
+    //
+    // G = spasi di atas garis ke-5
+    //
+    // A = garis bantu pertama
+    //
+    // B = spasi di atas garis bantu pertama
+    //
+
+    const posisi = {
+
+        "D": 120,
+
+        "E": 105,
+
+        "F": 90,
+
+        "G": 75,
+
+        "A": 60,
+
+        "B": 45
+
+    };
+
+
+    const y = posisi[target.nama];
+
+    const x = 270;
+
+
+    // -----------------------------
+    // GARIS BANTU
+    // -----------------------------
+
+    if (
+        target.nama === "A"
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(x - 35, y);
+        ctx.lineTo(x + 35, y);
+
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+    }
+
+
+    // -----------------------------
+    // KEPALA NOT
+    // -----------------------------
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        x,
+        y,
+        17,
+        12,
+        -0.3,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // -----------------------------
+    // BATANG NOT
+    // -----------------------------
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x + 15,
+        y
+    );
+
+    ctx.lineTo(
+        x + 15,
+        y - 75
+    );
+
+    ctx.lineWidth = 4;
+
+    ctx.stroke();
+
+}
+
+
+// =====================================================
+// KEDIP LAYAR
+// =====================================================
+
+function kedip(warna) {
+
+    document.body.classList.add(
+        warna
+    );
+
+    setTimeout(() => {
+
+        document.body.classList.remove(
+            warna
+        );
+
+    }, 180);
+}
+
+
+// =====================================================
+// AUDIO
+// =====================================================
+
+let audioContext;
+let analyser;
+let microphone;
+let buffer;
+
+async function mulaiMikrofon() {
+
+    try {
+
+        const stream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+
+        microphone =
+            audioContext.createMediaStreamSource(
+                stream
+            );
+
+
+        analyser =
+            audioContext.createAnalyser();
+
+
+        analyser.fftSize = 4096;
+
+
+        microphone.connect(
+            analyser
+        );
+
+
+        buffer =
+            new Float32Array(
+                analyser.fftSize
+            );
+
+
+        deteksiNada();
+
+    }
+
+    catch (error) {
+
+        console.log(error);
+
+        document.body.innerHTML =
+            "<h2>Izinkan akses mikrofon</h2>";
+
+    }
+
+}
+
+
+// =====================================================
+// DETEKSI NADA
+// =====================================================
+
+function deteksiNada() {
+
+    analyser.getFloatTimeDomainData(
+        buffer
+    );
+
+
+    const frekuensi =
+        cariFrekuensi(
+            buffer,
+            audioContext.sampleRate
+        );
+
+
+    if (frekuensi > 0) {
+
+        cekNada(frekuensi);
+
+    }
+
+
+    requestAnimationFrame(
+        deteksiNada
+    );
+
+}
+
+
+// =====================================================
+// CARI FREKUENSI
+// =====================================================
+
+function cariFrekuensi(
+    buffer,
+    sampleRate
+) {
+
+    let rms = 0;
+
+
+    for (
+        let i = 0;
+        i < buffer.length;
+        i++
+    ) {
+
+        rms +=
+            buffer[i] *
+            buffer[i];
+
+    }
+
+
+    rms =
+        Math.sqrt(
+            rms / buffer.length
+        );
+
+
+    if (rms < 0.015) {
+
+        return -1;
+
+    }
+
+
+    let bestOffset = -1;
+    let bestCorrelation = 0;
+
+
+    for (
+        let offset = 20;
+        offset < 1000;
+        offset++
+    ) {
+
+        let correlation = 0;
+
+
+        for (
+            let i = 0;
+            i < buffer.length - offset;
+            i++
+        ) {
+
+            correlation +=
+                buffer[i] *
+                buffer[i + offset];
+
+        }
+
+
+        correlation /=
+            buffer.length - offset;
+
+
+        if (
+            correlation >
+            bestCorrelation
+        ) {
+
+            bestCorrelation =
+                correlation;
+
+            bestOffset =
+                offset;
+
+        }
+
+    }
+
+
+    if (bestOffset === -1) {
+
+        return -1;
+
+    }
+
+
+    return (
+        sampleRate /
+        bestOffset
+    );
+
+}
+
+
+// =====================================================
+// CEK NADA
+// =====================================================
+
+let waktuTerakhir = 0;
+
+function cekNada(freq) {
+
+    const sekarang =
+        Date.now();
+
+
+    if (
+        sekarang -
+        waktuTerakhir <
+        500
+    ) {
+
+        return;
+
+    }
+
+
+    let terdekat = null;
+
+    let selisihTerkecil =
+        Infinity;
+
+
+    for (const n of nada) {
+
+        const selisih =
+            Math.abs(
+                freq -
+                n.frekuensi
+            );
+
+
+        if (
+            selisih <
+            selisihTerkecil
+        ) {
+
+            selisihTerkecil =
+                selisih;
+
+            terdekat = n;
+
+        }
+
+    }
+
+
+    if (
+        terdekat &&
+        selisihTerkecil /
+        terdekat.frekuensi <
+        0.025
+    ) {
+
+        waktuTerakhir =
+            sekarang;
+
+
+        // -------------------------
+        // BENAR
+        // -------------------------
+
+        if (
+            terdekat.nama ===
+            target.nama
+        ) {
+
+            kedip(
+                "kedip-hijau"
+            );
+
+
+            setTimeout(() => {
+
+                pilihNot();
+
+            }, 180);
+
+        }
+
+
+        // -------------------------
+        // SALAH
+        // -------------------------
+
+        else {
+
+            kedip(
+                "kedip-merah"
+            );
+
+        }
+
+    }
+
+}
+
+
+// =====================================================
+// MULAI OTOMATIS
+// =====================================================
+
+pilihNot();
+
+mulaiMikrofon();
+
+</script>
+
+</body>
+</html>
